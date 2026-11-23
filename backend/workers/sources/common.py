@@ -1,5 +1,6 @@
 import hashlib
 import re
+import ftfy
 
 from bs4 import BeautifulSoup
 
@@ -17,3 +18,10 @@ def _normalize(text: str) -> str:
 def make_dedupe_hash(company: str, title: str) -> str:
     key = f"{_normalize(company)}|{_normalize(title)}"
     return hashlib.sha256(key.encode("utf-8")).hexdigest()
+
+def split_regions(value: str) -> list[str]:
+    return [part.strip() for part in re.split(r"[,;/]", value) if part.strip()]
+
+
+def fix_text(text: str) -> str:
+    return ftfy.fix_encoding(text)

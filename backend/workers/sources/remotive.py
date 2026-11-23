@@ -1,11 +1,10 @@
 import logging
-import re
 from datetime import datetime, timezone
 
 import httpx
 
 from app.schemas.job import JobCreate
-from workers.sources.common import html_to_text, make_dedupe_hash
+from workers.sources.common import html_to_text, make_dedupe_hash, split_regions
 
 logger = logging.getLogger(__name__)
 
@@ -39,10 +38,6 @@ def _parse_date(value: str | None) -> datetime | None:
     return parsed
 
 
-def _split_regions(value: str) -> list[str]:
-    return [part.strip() for part in re.split(r"[,;/]", value) if part.strip()]
-
-
 def parse_remotive_job(raw: dict) -> JobCreate:
     location = (raw.get("candidate_required_location") or "").strip()
     salary = (raw.get("salary") or "").strip()
@@ -57,7 +52,7 @@ def parse_remotive_job(raw: dict) -> JobCreate:
         apply_url=raw["url"],
         location_text=location or None,
         remote=True,
-        eligible_regions=_split_regions(location),
+        eligible_regions=split_regions(location),
         employment_type=raw.get("job_type") or None,
         salary_text=salary or None,
         posted_at=_parse_date(raw.get("publication_date")),

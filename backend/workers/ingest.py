@@ -5,6 +5,7 @@ from collections.abc import Callable
 from app.schemas.job import JobCreate
 from workers.sources.himalayas import fetch_himalayas, parse_himalayas_jobs
 from workers.sources.remotive import fetch_remotive, parse_remotive_jobs
+from workers.sources.remoteok import fetch_remoteok, parse_remoteok_jobs
 from workers.store import finish_run, save_jobs, start_ingest_run
 
 logger = logging.getLogger(__name__)
@@ -34,6 +35,7 @@ def ingest_source(
 SOURCES = {
     "remotive": (fetch_remotive, parse_remotive_jobs),
     "himalayas": (fetch_himalayas, parse_himalayas_jobs),
+    "remoteok": (fetch_remoteok, parse_remoteok_jobs),
 }
 
 

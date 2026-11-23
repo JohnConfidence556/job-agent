@@ -25,7 +25,7 @@ def fetch_remotive(
     if limit:
         params["limit"] = limit
 
-    response = httpx.get(REMOTIVE_URL, params=params, timeout=30)
+    response = httpx.get(REMOTIVE_URL, params=params, timeout=httpx.Timeout(10, read=90))
     response.raise_for_status()
     return response.json()["jobs"]
 

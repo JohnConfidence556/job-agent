@@ -70,7 +70,7 @@ def parse_remotive_jobs(raw_jobs: list[dict]) -> list[JobCreate]:
     for raw in raw_jobs:
         try:
             jobs.append(parse_remotive_job(raw))
-        except (KeyError, TypeError, ValueError):
+        except (KeyError, TypeError, ValueError, AttributeError):
             logger.warning(
                 "Skipping malformed Remotive job %s", raw.get("id"), exc_info=True
             )

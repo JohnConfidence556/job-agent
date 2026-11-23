@@ -1,7 +1,9 @@
+import sys
 import logging
 from collections.abc import Callable
 
 from app.schemas.job import JobCreate
+from workers.sources.himalayas import fetch_himalayas, parse_himalayas_jobs
 from workers.sources.remotive import fetch_remotive, parse_remotive_jobs
 from workers.store import finish_run, save_jobs, start_ingest_run
 
@@ -31,17 +33,24 @@ def ingest_source(
 
 SOURCES = {
     "remotive": (fetch_remotive, parse_remotive_jobs),
+    "himalayas": (fetch_himalayas, parse_himalayas_jobs),
 }
 
 
-def main() -> None:
+def main(selected: list[str]) -> None:
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
-    for name, (fetch, parse) in SOURCES.items():
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+
+    for name in selected or SOURCES:
+        if name not in SOURCES:
+            logger.error("Unknown source: %s", name)
+            continue
+        fetch, parse = SOURCES[name]
         ingest_source(name, fetch, parse)
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

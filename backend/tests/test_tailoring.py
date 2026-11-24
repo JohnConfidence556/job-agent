@@ -178,3 +178,10 @@ def test_daily_limit_blocks_new_tailoring_but_not_cached_ones(monkeypatch):
     assert flow.generated == 0
     flow.existing = {"version": 1}
     assert t.tailor_for_match("u1", "m1") == {"version": 1}
+
+
+def test_spelled_out_numbers_are_checked_like_digits():
+    vocab = {"led", "team", "of", "engineers", "a"}
+    assert t.check_text("Led a team of five engineers", "Led 3 engineers", vocab)
+    assert t.check_text("Led a team of five engineers", "Led a team of 5 engineers", vocab) == []
+    assert t.check_text("Led a team of 5 engineers", "Led a team of five engineers", vocab) == []

@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     match_max_jobs: int = 8
     match_call_delay_seconds: float = 0.0
     tailor_daily_limit: int = 10
+    supabase_anon_key: str = ""
+    frontend_origin: str = "http://localhost:3000"
+    cv_upload_daily_limit: int = 5
+    manual_search_daily_limit: int = 3
 
 
 @lru_cache

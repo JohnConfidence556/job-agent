@@ -6,6 +6,7 @@ from app.config import get_settings
 from app.db import get_supabase
 from app.llm import complete_json
 from app.schemas.cv import MasterCV
+from app.services.usage import count_today
 from app.schemas.tailoring import TailoredDraft
 
 logger = logging.getLogger(__name__)
@@ -86,8 +87,18 @@ def tokens(text: str) -> set[str]:
     return set(re.findall(r"[a-z0-9]+(?:[+#]+)?", text.lower()))
 
 
+NUMBER_WORDS = {
+    "two": "2", "three": "3", "four": "4", "five": "5", "six": "6", "seven": "7",
+    "eight": "8", "nine": "9", "ten": "10", "eleven": "11", "twelve": "12",
+    "twenty": "20", "thirty": "30", "forty": "40", "fifty": "50",
+    "hundred": "100", "thousand": "1000",
+}
+
+
 def numbers(text: str) -> set[str]:
-    return set(re.findall(r"\d+(?:[.,]\d+)*", text))
+    found = set(re.findall(r"\d+(?:[.,]\d+)*", text))
+    found |= {NUMBER_WORDS[w] for w in re.findall(r"[a-z]+", text.lower()) if w in NUMBER_WORDS}
+    return found
 
 
 def proper_terms(text: str) -> list[str]:
@@ -281,17 +292,7 @@ def load_current_tailored(match_id: str) -> dict | None:
 
 
 def count_tailorings_today(user_id: str) -> int:
-    start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-    response = (
-        get_supabase()
-        .table("llm_usage")
-        .select("id", count="exact")
-        .eq("user_id", user_id)
-        .eq("task", "cv_tailor")
-        .gte("created_at", start.isoformat())
-        .execute()
-    )
-    return response.count or 0
+    return count_today(user_id, "cv_tailor")
 
 
 def save_tailored(user_id, match_id, master_cv_id, content, report, model) -> dict:

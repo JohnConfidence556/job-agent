@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     llm_light_model: str = "openai/gpt-oss-20b"
     match_max_jobs: int = 8
     match_call_delay_seconds: float = 0.0
+    tailor_daily_limit: int = 10
 
 
 @lru_cache

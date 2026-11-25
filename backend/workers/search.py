@@ -25,7 +25,7 @@ MAX_CONSECUTIVE_FAILURES = 2
 UNIQUE_VIOLATION = "23505"
 
 
-def claim_run(user_id: str, origin: str) -> str | None:
+def claim_run(user_id: str, origin: str, run_date: str | None = None) -> str | None:
     try:
         response = (
             get_supabase()
@@ -35,7 +35,7 @@ def claim_run(user_id: str, origin: str) -> str | None:
                     "kind": "user_search",
                     "user_id": user_id,
                     "origin": origin,
-                    "run_date": datetime.now(timezone.utc).date().isoformat(),
+                    "run_date": run_date or datetime.now(timezone.utc).date().isoformat(),
                 }
             )
             .execute()
@@ -47,7 +47,7 @@ def claim_run(user_id: str, origin: str) -> str | None:
     return response.data[0]["id"]
 
 
-def run_user_search(user_id: str, origin: str = "manual") -> dict:
+def run_user_search(user_id: str, origin: str = "manual", run_date: str | None = None) -> dict:
     profile = load_profile(user_id)
     if profile is None:
         return {"skipped": "no profile"}
@@ -57,7 +57,7 @@ def run_user_search(user_id: str, origin: str = "manual") -> dict:
     if cv is None:
         return {"skipped": "no master CV"}
 
-    run_id = claim_run(user_id, origin)
+    run_id = claim_run(user_id, origin, run_date)
     if run_id is None:
         return {"skipped": "already ran today"}
 

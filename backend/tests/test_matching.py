@@ -110,7 +110,7 @@ class Fakes:
     def install(self, mp, pool):
         mp.setattr(search, "load_profile", lambda uid: PROFILE)
         mp.setattr(search, "load_current_cv", lambda uid: cv())
-        mp.setattr(search, "claim_run", lambda uid, origin: "run1")
+        mp.setattr(search, "claim_run", lambda uid, origin, run_date=None: "run1")
         mp.setattr(search, "load_pool", lambda uid: pool)
         mp.setattr(search, "save_match", lambda uid, jid, fit: self.saved.append((jid, fit.score)))
         mp.setattr(
@@ -157,7 +157,7 @@ def test_two_failures_in_a_row_stop_the_run(monkeypatch):
 def test_already_ran_today_is_skipped(monkeypatch):
     fakes = Fakes([])
     fakes.install(monkeypatch, [])
-    monkeypatch.setattr(search, "claim_run", lambda uid, origin: None)
+    monkeypatch.setattr(search, "claim_run", lambda uid, origin, run_date=None: None)
     assert search.run_user_search("u1", "scheduled") == {"skipped": "already ran today"}
 
 

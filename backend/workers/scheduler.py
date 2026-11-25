@@ -4,6 +4,7 @@ import time
 from collections import Counter
 from datetime import datetime, time as clock_time, timedelta, timezone
 from zoneinfo import ZoneInfo
+from app.timeutil import parse_timestamp
 
 from app.db import get_supabase
 from workers.ingest import main as run_ingest
@@ -79,7 +80,7 @@ def last_ingest_started() -> datetime | None:
         .execute()
         .data
     )
-    return datetime.fromisoformat(rows[0]["started_at"]) if rows else None
+    return parse_timestamp(rows[0]["started_at"]) if rows else None
 
 
 def load_state(now: datetime):

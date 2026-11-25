@@ -8,6 +8,7 @@ from app.config import get_settings
 from app.db import get_supabase
 from app.llm import complete_json
 from app.schemas.cv import MasterCV
+from app.timeutil import parse_timestamp
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +84,7 @@ def relevance(job: dict, roles: set[str], skills: set[str]) -> int:
 
 def _timestamp(job: dict) -> float:
     value = job.get("posted_at") or job.get("first_seen_at")
-    return datetime.fromisoformat(value).timestamp() if value else 0.0
+    return parse_timestamp(value).timestamp() if value else 0.0
 
 
 def select_candidates(

@@ -1,0 +1,148 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #17224d;
+  --color-ink-2: #3a4470;
+  --color-mute: #646c8e;
+  --color-paper: #eff1f7;
+  --color-sheet: #ffffff;
+  --color-line: #d6dae8;
+  --color-tape: #f4c430;
+  --color-tape-pale: #f6e8b8;
+  --color-chalk: #d93f48;
+  --color-stitch: #1c7556;
+  --color-adire: #3b52b4;
+
+  --font-display: "Bricolage Grotesque Variable", "Segoe UI", system-ui, sans-serif;
+  --font-sans: "Instrument Sans Variable", "Segoe UI", system-ui, sans-serif;
+
+  --radius-field: 8px;
+  --radius-panel: 14px;
+}
+
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+::selection {
+  background: var(--color-tape);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-adire);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.on-ink :focus-visible {
+  outline-color: var(--color-tape);
+}
+
+/* The tape: the one signature element. */
+.tape {
+  --score: 0;
+  position: relative;
+  height: var(--tape-h, 14px);
+  background:
+    repeating-linear-gradient(90deg, rgb(23 34 77 / 0.55) 0 1px, transparent 1px 5%) bottom / 100% 40% no-repeat,
+    repeating-linear-gradient(90deg, rgb(23 34 77 / 0.7) 0 1px, transparent 1px 10%) bottom / 100% 70% no-repeat,
+    var(--color-tape-pale);
+  border-radius: 2px;
+  overflow: visible;
+}
+
+.tape::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--score) * 1%);
+  background:
+    repeating-linear-gradient(90deg, rgb(23 34 77 / 0.55) 0 1px, transparent 1px 5%) bottom / 100% 40% no-repeat,
+    repeating-linear-gradient(90deg, rgb(23 34 77 / 0.7) 0 1px, transparent 1px 10%) bottom / 100% 70% no-repeat,
+    var(--color-tape);
+  border-radius: 2px 0 0 2px;
+  transition: width 900ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tape-marker {
+  position: absolute;
+  top: -5px;
+  bottom: -3px;
+  width: 3px;
+  margin-left: -1.5px;
+  background: var(--color-ink);
+  left: calc(var(--score) * 1%);
+  transition: left 900ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tape-marker::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -4px;
+  border: 5.5px solid transparent;
+  border-top: 7px solid var(--color-ink);
+  border-bottom: 0;
+}
+
+/* Chalk mark on rewritten CV lines. */
+.chalk {
+  background: linear-gradient(transparent 58%, rgb(244 196 48 / 0.55) 58% 92%, transparent 92%);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tape::before,
+  .tape-marker {
+    transition: none;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes pull {
+  from { background-position: 0 0; }
+  to { background-position: 28px 0; }
+}
+
+.stitching {
+  height: 4px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(90deg, var(--color-ink) 0 10px, transparent 10px 18px);
+  background-size: 28px 100%;
+  animation: pull 700ms linear infinite;
+  opacity: 0.8;
+}
+
+@media print {
+  body * { visibility: hidden; }
+  .print-area, .print-area * { visibility: visible; }
+  .print-area {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    box-shadow: none !important;
+    border: 0 !important;
+    padding: 0 !important;
+  }
+  .chalk { background: none !important; }
+  .no-print { display: none !important; }
+}
